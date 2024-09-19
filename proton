@@ -1122,6 +1122,21 @@ def default_compat_config():
     if "SteamAppId" in os.environ:
         appid = os.environ["SteamAppId"]
         if appid in [
+                "2322010", #GoW: Ragnarök
+                "2552430", #Kingdom Hearts HD 1.5+2.5 ReMIX
+                "2206210", #GYLT
+                "1730700", #We Love Katamari REROLL+ Royal Reverie
+                "1928420", #Farlight 84
+                "1680880", #Forspoken
+        ]:
+            ret.add("enforcedeckenv")
+
+        if appid in [
+                "1205520", #Pentiment - https://github.com/ValveSoftware/Proton/issues/6415, Mar 6 2023
+        ]:
+            ret.add("forcedisabledeckenv")
+
+        if appid in [
                 #affected by CW bug 19126
                 "536280", #Disintegration
                 "707030", #POSTAL 4: No Regerts
@@ -1578,6 +1593,13 @@ class Session:
 
         if "PROTON_CRASH_REPORT_DIR" in self.env:
             self.env["WINE_CRASH_REPORT_DIR"] = self.env["PROTON_CRASH_REPORT_DIR"]
+
+        if "enforcedeckenv" in self.compat_config:
+            self.env["SteamDeck"] = "1"
+
+        if "forcedisabledeckenv" in self.compat_config:
+            if "SteamDeck" in self.env.keys():
+                del self.env["SteamDeck"]
 
         if "PROTON_LOG" in self.env and nonzero(self.env["PROTON_LOG"]):
             if self.setup_logging(append_forever=False):
